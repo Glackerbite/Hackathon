@@ -39,12 +39,21 @@ def login():
         print("Error accessing account file:", e)
         return "fail"
     else:
-        password2= userfile.read()
+        data= userfile.read()
+        data = data.splitlines()
+        password2 = data[0]
+
+        userfile.close()
+
         print(f"Read password: {password2} and comparing with {password}")
         if password2 == password:
-            userfile.close()
+            if len(data) > 1:
+                account_type = data[1]
+            else:
+                print("Login failed: Malformed account file")
+                return "fail"
             print("Login successful")
-            return "success"
+            return f"success, {account_type}" 
         print("Login failed: Incorrect password")
         userfile.close()
         return "fail"
