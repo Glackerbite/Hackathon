@@ -22,7 +22,6 @@ def calendar():
 
 @app.route('/login', methods=['POST','GET'])
 def login():
-    # Accept JSON body for POST; for GET show a simple message
     print("Received login request")
     username = request.form.get('username')
     password = request.form.get('password')
