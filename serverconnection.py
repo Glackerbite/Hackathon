@@ -72,7 +72,7 @@ def register():
         with open(f"accounts/{username}.txt","w") as file:
             file.write(f"{password}\n{accountType}")
             return "success"
-    raise "Something went wrong"
+    raise Exception("Something went wrong")
 
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=os.getenv("PORT", 5000)) 
