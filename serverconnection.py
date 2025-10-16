@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -23,29 +23,25 @@ def calendar():
 @app.route('/login', methods=['POST','GET'])
 def login():
     # Accept JSON body for POST; for GET show a simple message
-    if request.method == 'POST':
-        return {"status": "Send a POST with JSON {username, password}"}, 200
-
-    print("Receive login request")
-    request.form.get('username')
+    print("Received login request")
     username = request.form.get('username')
     password = request.form.get('password')
     print(f"Username: {username}, Password: {password}")
     try:
         userfile= open("account/"+username+".txt" , 'r') 
     except FileNotFoundError:
-        return {"Incorrect username or password"}, 401
+        return jsonify({"fail"})
     except Exception as e:
         print("Error accessing account file:", e)
-        return {"error": "Internal server error"}, 500
+        return jsonify({"fail"})
     else:
         password2= userfile.read()
         print(f"Read password: {password2} and comparing with {password}")
         if password2 == password:
             userfile.close()
-            return {"status": "login successful"}, 200
+            return jsonify({"success"})
         userfile.close()
-        return {"Incorrect username or password"}, 401
+        return jsonify({"fail"})
         
     
 
