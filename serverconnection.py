@@ -1,14 +1,15 @@
 import os
-from flask import Flask, request 
-from flask_socketio import SocketIO, emit
+from flask import Flask, request
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'WARNINGNOKEYFOUND') #sets key so its not in hardcoded in the code
-socketio = SocketIO(app, cors_allowed_origins="*")
+app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = os.getenv('KEY', 'BASELINEKEY')
+print("Secret Key:", app.config['SECRET_KEY'])
+print("Port:", os.getenv('PORT'))
 
-@socketio.on('connect')
-def handle_connect():
-    print("Unity client connected")
+@app.route('/')
+def index():
+    print("Received a request from:", request.remote_addr)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port= 948425, debug=True) #this will use all IPs of our machine
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT')))
