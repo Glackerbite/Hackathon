@@ -9,6 +9,7 @@ app.config['SECRET_KEY'] = os.getenv('KEY', 'BASELINEKEY')
 print("Secret Key:", app.config['SECRET_KEY'])
 print("Port:", os.getenv('PORT'))
 
+
 @app.route('/')
 def index():
     print("Received a request from:", request.remote_addr)
@@ -57,9 +58,22 @@ def login():
         print("Login failed: Incorrect password")
         userfile.close()
         return "fail"
-        
-
+@app .route('/register', methods=['POST'])
+def register():
+    print("Received registration request")
+    key = request.form.get('key')
+    username = request.form.get('username')
+    password = request.form.get('password')
+    accountType = request.form.get("type")
+    print(f"Attempting to register {accountType}{username} with password {password}.")
+    if os.path.exists(f"accounts/{username}.txt"):
+        return 'fail'
+    else:
+        with open(f"accounts/{username}.txt","w") as file:
+            file.write(f"{password}\n{accountType}")
+            return "success"
+    raise "Something went wrong"
 
 if __name__ == '__main__': 
-    app.run(host='0.0.0.0', port=5000) 
+    app.run(host='0.0.0.0', port=os.getenv("PORT", 5000)) 
 
