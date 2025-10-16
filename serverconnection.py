@@ -11,4 +11,4 @@ def handle_connect():
     print("Unity client connected")
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port= 948425)
+    socketio.run(app, host='0.0.0.0', port= 948425, debug=True) #this will use all IPs of our machine
