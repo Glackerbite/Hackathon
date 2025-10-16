@@ -27,7 +27,8 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
     print(f"Username: {username}, Password: {password}")
-    if key == "OKAYTHISISTHEKEY":
+    if key != "OKAYTHISISTHEKEY":
+        return "fail"
     try:
         userfile= open("account/"+username+".txt" , 'r') 
     except FileNotFoundError:
@@ -40,7 +41,9 @@ def login():
         print(f"Read password: {password2} and comparing with {password}")
         if password2 == password:
             userfile.close()
+            print("Login successful")
             return "success"
+        print("Login failed: Incorrect password")
         userfile.close()
         return "fail"
         
