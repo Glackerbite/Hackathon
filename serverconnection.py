@@ -28,10 +28,12 @@ def login():
     password = request.form.get('password')
     print(f"Username: {username}, Password: {password}")
     if key != "OKAYTHISISTHEKEY":
+        print("Login failed: Invalid key")
         return "fail"
     try:
         userfile= open("account/"+username+".txt" , 'r') 
     except FileNotFoundError:
+        print("Login failed: User not found")
         return "fail"
     except Exception as e:
         print("Error accessing account file:", e)
