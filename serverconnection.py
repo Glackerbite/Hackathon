@@ -31,7 +31,7 @@ def login():
         print("Login failed: Invalid key")
         return "fail"
     try:
-        userfile= open("account/"+username+".txt" , 'r') 
+        userfile= open("accounts/"+username+".txt" , 'r') 
     except FileNotFoundError:
         print("Login failed: User not found")
         return "fail"
