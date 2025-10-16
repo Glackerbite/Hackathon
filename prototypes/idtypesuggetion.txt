@@ -1,0 +1,7 @@
+requestid: an id given to every student request 
+form: DDMM of the event + a increasing 5 digit number 
+examples:
+20100001, 20/10 00001 
+10114677 10/11 4677
+
+#Need to finish 

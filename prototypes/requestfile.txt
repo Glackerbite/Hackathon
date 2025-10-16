@@ -1,0 +1,12 @@
+#this is a suggestion of how it might look like
+#for more info about the diferent type of id go to idtypessuggestion.txt
+
+Title:   request id?
+#request id could be something like "201000001" with this format DDMM IDNUmber
+username
+Date
+time
+Lab 
+Teacher Supervisor #maybe some other teacher would want to supervise the Lab
+Status 
+Equipment (if any)

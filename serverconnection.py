@@ -15,11 +15,6 @@ def index():
     print("Received a request from:", request.remote_addr)
     return "Server is running!"
 
-@app.route('/calendar', methods=['POST'])
-def calendar():
-    
-    
-    return ...
 
 @app.route('/login', methods=['POST','GET'])
 def login():
@@ -64,7 +59,11 @@ def register():
     key = request.form.get('key')
     username = request.form.get('username')
     password = request.form.get('password')
-    accountType = request.form.get("type")
+    accountType = "student"
+    if key != "OKAYTHISISTHEKEY":
+        print("Registration failed: Invalid key")
+        return "fail"
+    
     print(f"Attempting to register {accountType}{username} with password {password}.")
     if os.path.exists(f"accounts/{username}.txt"):
         return 'fail'
@@ -73,6 +72,23 @@ def register():
             file.write(f"{password}\n{accountType}")
             return "success"
     raise Exception("Something went wrong")
+
+@app.route('/calendar', methods=['POST'])
+def calendar():
+    
+    
+    return ...
+
+@app.route("/requestSession", methods = ["POST", "GET"])
+def requestSession():
+    print("Received add session request")
+    key = request.form.get('key')
+    username = request.form.get('username')
+    if key != "OKAYTHISISTHEKEY":
+        print("Request failed: Invalid key")
+        return "fail"
+    return 
+
 
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=os.getenv("PORT", 5000)) 
