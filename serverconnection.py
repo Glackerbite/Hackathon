@@ -23,9 +23,11 @@ def calendar():
 @app.route('/login', methods=['POST','GET'])
 def login():
     print("Received login request")
+    key = request.form.get('key')
     username = request.form.get('username')
     password = request.form.get('password')
     print(f"Username: {username}, Password: {password}")
+    if key == "OKAYTHISISTHEKEY":
     try:
         userfile= open("account/"+username+".txt" , 'r') 
     except FileNotFoundError:
