@@ -29,16 +29,16 @@ def login():
     try:
         userfile= open("account/"+username+".txt" , 'r') 
     except FileNotFoundError:
-        return jsonify({"fail"})
+        return "fail"
     except Exception as e:
         print("Error accessing account file:", e)
-        return jsonify({"fail"})
+        return "fail"
     else:
         password2= userfile.read()
         print(f"Read password: {password2} and comparing with {password}")
         if password2 == password:
             userfile.close()
-            return jsonify({"success"})
+            return "success"
         userfile.close()
         return jsonify({"fail"})
         
