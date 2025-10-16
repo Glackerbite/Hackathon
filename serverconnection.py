@@ -43,7 +43,7 @@ def login():
 
         print(f"Read password: {password2} and comparing with {password}")
         if password2 == password:
-            if len(data) > 1:
+            if len(password2) > 1:
                 account_type = data[1]
             else:
                 print("Login failed: Malformed account file")
@@ -66,10 +66,12 @@ def register():
     
     print(f"Attempting to register {accountType}{username} with password {password}.")
     if os.path.exists(f"accounts/{username}.txt"):
+        print(f"{username} already exists")
         return 'fail'
     else:
         with open(f"accounts/{username}.txt","w") as file:
             file.write(f"{password}\n{accountType}")
+            print("Succesfully added new account")
             return "success"
     raise Exception("Something went wrong")
 
