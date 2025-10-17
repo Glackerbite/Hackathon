@@ -5,15 +5,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SECRET_KEY'] = os.getenv('KEY', 'BASELINEKEY')
-print("Secret Key:", app.config['SECRET_KEY'])
 print("Port:", os.getenv('PORT'))
-
-
-@app.route('/')
-def index():
-    print("Received a request from:", request.remote_addr)
-    return "Server is running!"
 
 
 @app.route('/login', methods=['POST','GET'])
@@ -23,7 +15,7 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
     print(f"Username: {username}, Password: {password}")
-    if key != "OKAYTHISISTHEKEY":
+    if key != os.getenv("KEY"):
         print("Login failed: Invalid key")
         return "fail"
     try:
@@ -49,7 +41,7 @@ def login():
                 print("Login failed: Malformed account file")
                 return "fail"
             print("Login successful")
-            return f"success, {account_type}" 
+            return f"success, {username}, {account_type}" 
         print("Login failed: Incorrect password")
         userfile.close()
         return "fail"
@@ -60,11 +52,12 @@ def register():
     username = request.form.get('username')
     password = request.form.get('password')
     accountType = "student"
-    if key != "OKAYTHISISTHEKEY":
-        print("Registration failed: Invalid key")
+    if key != os.getenv("KEY"):
+        print("Login failed: Invalid key")
         return "fail"
     
     print(f"Attempting to register {accountType}{username} with password {password}.")
+
     if os.path.exists(f"accounts/{username}.txt"):
         print(f"{username} already exists")
         return 'fail'
@@ -94,4 +87,3 @@ def requestSession():
 
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=os.getenv("PORT", 5000)) 
-
