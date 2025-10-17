@@ -79,8 +79,8 @@ def requestSession():
     print("Received add session request")
     key = request.form.get('key')
     username = request.form.get('username')
-    if key != "OKAYTHISISTHEKEY":
-        print("Request failed: Invalid key")
+    if key != os.getenv("KEY"):
+        print("Login failed: Invalid key")
         return "fail"
     return 
 
