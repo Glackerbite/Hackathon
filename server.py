@@ -8,8 +8,25 @@ app.config['DEBUG'] = True
 print("Port:", os.getenv('PORT'))
 
 class Session:
-    def __init__(self):
-        self.
+    def __init__(self, date, time, lab):
+        self.date = date
+        self.time = time
+        self.lab = lab
+        ...
+        
+    def filechecker(self)-> bool:
+        ...
+        return False
+    
+    def studentRequest(self):
+        ...
+        
+    def dataChange(self):
+        ...
+    
+    def __str__(self):
+        ...   
+
 
 @app.route('/login', methods=['POST','GET'])
 def login():
@@ -89,6 +106,7 @@ def requestSession():
     date = request.form.get('date')
     time = request.form.get('time')
     lab = request.form.get('lab')
+    equipment = request.form.get('equipment')
     
 
     if key != os.getenv("KEY"):
