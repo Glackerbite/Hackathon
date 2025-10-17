@@ -1,12 +1,15 @@
 import os
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 app = Flask(__name__)
 app.config['DEBUG'] = True
 print("Port:", os.getenv('PORT'))
 
+class Session:
+    def __init__(self):
+        self.
 
 @app.route('/login', methods=['POST','GET'])
 def login():
@@ -29,15 +32,13 @@ def login():
     else:
         data= userfile.read()
         data = data.splitlines()
-        password2 = data[0]
-
         userfile.close()
-
+        
+        password2 = data[0]
+        account_type = data[1]
         print(f"Read password: {password2} and comparing with {password}")
         if password2 == password:
-            if len(password2) > 1:
-                account_type = data[1]
-            else:
+            if len(password2) < 1 or len(account_type) < 1:
                 print("Login failed: Malformed account file")
                 return "fail"
             print("Login successful")
@@ -56,6 +57,10 @@ def register():
         print("Login failed: Invalid key")
         return "fail"
     
+    if len(password) < 1:
+        print(f'Missing password')
+        return "fail"
+    
     print(f"Attempting to register {accountType}{username} with password {password}.")
 
     if os.path.exists(f"accounts/{username}.txt"):
@@ -66,7 +71,7 @@ def register():
             file.write(f"{password}\n{accountType}")
             print("Succesfully added new account")
             return "success"
-    raise Exception("Something went wrong")
+    raise Exception("Something went wrong when creating the account.")
 
 @app.route('/calendar', methods=['POST'])
 def calendar():
@@ -76,12 +81,22 @@ def calendar():
 
 @app.route("/requestSession", methods = ["POST", "GET"])
 def requestSession():
+
     print("Received add session request")
     key = request.form.get('key')
     username = request.form.get('username')
+    accounType = request.form.get("accountType")
+    date = request.form.get('date')
+    time = request.form.get('time')
+    lab = request.form.get('lab')
+    
+
     if key != os.getenv("KEY"):
         print("Login failed: Invalid key")
         return "fail"
+    
+
+
     return 
 
 

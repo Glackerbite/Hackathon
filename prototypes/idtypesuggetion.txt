@@ -1,4 +1,4 @@
-requestid: an id given to every student request 
+requestid: an id given to every session request 
 form: DDMM of the event + a increasing 5 digit number 
 examples:
 20100001, 20/10 00001 
