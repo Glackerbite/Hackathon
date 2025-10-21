@@ -1,3 +1,2 @@
 # Hackathon
-I finally figured out how to use Flask to create a port and let you connect to it
-:)
+SO SANTI THE STUDENTS DONT REALLY NEED TO REQUEST A SESSION only teacher can set theses sessions

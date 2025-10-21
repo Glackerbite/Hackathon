@@ -1,0 +1,31 @@
+Folder name: sessions
+Inside:
+(
+    datefile: name= ddmmyy
+)
+Folder name: datefile
+inside
+(
+sessions;
+name= place + time (hhmm) EX: P1400
+place: m for mixed (chemistry and physics), b for bio 
+content:
+(
+    time end: hhmm
+    session type:  
+    Teacher Supervisor: () #maybe some other teacher would want to supervise the Lab
+    Equipment: ()
+    places: ()
+    students: ()
+    waitlist: ()
+
+    #to add/change:
+    nplaces: ()
+    vplaces: ()
+    nstudents: ()
+    vstudent: ()
+
+        
+
+)
+)

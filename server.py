@@ -1,32 +1,11 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from dotenv import load_dotenv
-
+from session import Session
 load_dotenv()
 app = Flask(__name__)
 app.config['DEBUG'] = True
 print("Port:", os.getenv('PORT'))
-
-class Session:
-    def __init__(self, date, time, lab):
-        self.date = date
-        self.time = time
-        self.lab = lab
-        ...
-        
-    def filechecker(self)-> bool:
-        ...
-        return False
-    
-    def studentRequest(self):
-        ...
-        
-    def dataChange(self):
-        ...
-    
-    def __str__(self):
-        ...   
-
 
 @app.route('/login', methods=['POST','GET'])
 def login():
