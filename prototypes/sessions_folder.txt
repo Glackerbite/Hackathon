@@ -7,7 +7,7 @@ Folder name: datefile
 inside
 (
 sessions;
-name= place + time (hhmm) EX: P1400
+name= place + time (hhmm) EX: M1400
 place: m for mixed (chemistry and physics), b for bio 
 content:
 (

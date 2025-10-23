@@ -32,16 +32,18 @@ def login():
         
         password2 = data[0]
         account_type = data[1]
+        classes = data[2]
         print(f"Read password: {password2} and comparing with {password}")
         if password2 == password:
             if len(password2) < 1 or len(account_type) < 1:
                 print("Login failed: Malformed account file")
                 return "fail"
             print("Login successful")
-            return f"success, {username}, {account_type}" 
+            return f"success, {username}, {account_type}, {classes}" 
         print("Login failed: Incorrect password")
         userfile.close()
         return "fail"
+    
 @app .route('/register', methods=['POST'])
 def register():
     print("Received registration request")
@@ -49,6 +51,7 @@ def register():
     username = request.form.get('username')
     password = request.form.get('password')
     accountType = "student"
+    classes = request.form.get("classes")
     if key != os.getenv("KEY"):
         print("Login failed: Invalid key")
         return "fail"
@@ -64,7 +67,7 @@ def register():
         return 'fail'
     else:
         with open(f"accounts/{username}.txt","w") as file:
-            file.write(f"{password}\n{accountType}")
+            file.write(f"{password}\n{accountType}\n{classes}")
             print("Succesfully added new account")
             return "success"
     raise Exception("Something went wrong when creating the account.")
@@ -92,6 +95,7 @@ def requestSession():
         print("Login failed: Invalid key")
         return "fail"
     
+    session = Session()    
 
 
     return 

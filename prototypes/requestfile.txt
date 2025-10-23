@@ -1,12 +1,10 @@
 #this is a suggestion of how it might look like
 #for more info about the diferent type of id go to idtypessuggestion.txt
 
-Title:   0607091234
-#request id could be something like "20100001" with this format DDMM IDNUmber
-username
-Date
-time start 
+Title:   ddmmyyid
+#request id could be something like "20100001" with this format
 time end
-Lab 
+usernames of the people requesting 
+type #physcis, bio, chem or physics and chem
 Teacher Supervisor #maybe some other teacher would want to supervise the Lab
 Equipment (if any)
