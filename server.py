@@ -83,7 +83,7 @@ def requestdatedata():
     zip_file = updates.create_sessions_zip(base_folder)
     if not zip_file:
         return "fail"
-    return send_file(zip_file, as_attachment=True, download_name="sessions_selected.zip")
+    return send_file(zip_file, as_attachment=True, download_name="sessions.zip")
 
 @app.route("/requestSession", methods = ["POST", "GET"])
 def requestSession():
@@ -140,11 +140,6 @@ def requestSession():
         print(f'account error: {accounType}')
         return 'fail'
 
-@app.route('/changedata', methods = ["GET"])
-def dataChange():
-    request.form.get("")    
-    
-    print("Initiating changing of date for")
 
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=os.getenv("PORT", 5000)) 
