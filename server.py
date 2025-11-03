@@ -116,6 +116,10 @@ def requestSession():
                     session.SRChange("request","requestees",username,add = True)
                 except Exception as e:
                     print("Error:\n", e)
+                    return 'fail'
+            else:
+                if str(e) == "Session file already exists":
+                    print("Session already exists, cannot request")
                     return 'fail'            
         except Exception as e:
             print(f'Error has occured when requesting\n{e}')
