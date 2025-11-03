@@ -173,7 +173,40 @@ class Session:
 
         with open(filedir, "w") as file:
             file.writelines(filelines)            
+    def SRGet(self, type:str, dataType:str):
 
+        if type == "session":
+            filedir = f'sessions/{self.date}/{self.id}'
+            dataTypes = ["time end","session type", "teacher Supervisor","equipment","places","students","waitlist"]
+            if dataType not in dataTypes:
+                raise SyntaxError("Error in session get: 'dataType' Syntax error")
+            if not self.filecheck():
+                raise FileNotFoundError("Error: file not found")
+
+        elif type == "request":
+            filedir = f'sessionRequests/{self.date}{self.id}'
+            dataTypes = ["requestees", "time end","session type", "teacher Supervisor","equipment"]
+            if dataType not in dataTypes:
+                raise SyntaxError("Error in request get: 'dataType' Syntax error")
+            if not self.reqcheck():
+                raise FileNotFoundError("Error in request get: file not found")
+
+        else:
+            raise SyntaxError("Error in SRGet: invalid type parameter")
+
+        with open(filedir, 'r') as f:
+            for line in f:
+                if ':' in line:
+                    key, rest = line.split(':', 1)
+                    if key == dataType:
+                        value = rest.strip()
+                        if not value:
+                            return []
+                        # return comma-separated items as list (trim whitespace)
+                        return [item.strip() for item in value.split(',') if item.strip()]
+
+        raise SyntaxError(f"No line found for dataType '{dataType}' in {filedir}")
 
     def __str__(self):
         return 
+

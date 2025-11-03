@@ -98,6 +98,50 @@ def set_requests_zip():
 
     return send_file(zip_file, as_attachment=True, download_name="requests.zip")
 
+@app.route("/requestSessionEntry", methods = ["POST", "GET"])
+def requestSessionEntry():
+    print("Received add session request entry")
+    key = request.form.get('key')
+    username = request.form.get('username')
+    acountType = request.form.get("accountType")
+    date = request.form.get('date')
+    time = request.form.get('time')
+    type = request.form.get('type')
+    if key != os.getenv("KEY"):
+        print("Login failed: Invalid key")
+        return "fail"
+    
+    session = Session(date,time,type)
+
+    print(f"Session:{session.time}:{session.id}")
+
+    if acountType == "student":
+        print(f'logged in as student')
+        try:
+            updates.addToWaitlist(session,username)
+        except Exception as e:
+            print(f'Error has occured when requesting\n{e}')
+            return 'fail'
+        else:
+            return 'success'
+    elif acountType == "teacher":
+        print("Logged in as teacher")
+        try:
+            session.SRChange("session","teacher Supervisor",username,add=True)
+        except Exception as e:
+            if str(e) == "error1":
+                print(f"{username} is already enrolled in the session.")
+            elif str(e) == "error2":
+                print(f"{username} is already in the waitlist.")
+            return 'fail'
+        else:
+            return 'success'
+    else:
+        print(f'account error: {acountType}')
+
+        return 'fail'
+
+
 @app.route("/requestSession", methods = ["POST", "GET"])
 def requestSession():
 
