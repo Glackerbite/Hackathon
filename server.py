@@ -1,7 +1,12 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, send_file
 from dotenv import load_dotenv
 from session import Session
+import shutil 
+from pathlib import Path
+import updates
+import tempfile
+
 load_dotenv()
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -72,12 +77,13 @@ def register():
             return "success"
     raise Exception("Something went wrong when creating the account.")
 
-@app.route('/requestsessiondata', methods=['POST'])
-def calendar():
-    
-
-    return ...
-
+@app.route('/requestdatedata', methods=['POST', 'GET'])
+def requestdatedata():
+    base_folder = Path("sessions")
+    zip_file = updates.create_sessions_zip(base_folder)
+    if not zip_file:
+        return "fail"
+    return send_file(zip_file, as_attachment=True, download_name="sessions_selected.zip")
 
 @app.route("/requestSession", methods = ["POST", "GET"])
 def requestSession():
@@ -103,6 +109,14 @@ def requestSession():
         print(f'logged in as student')
         try:
             session.requestSession(username,timeEnd,teacher,equipment)
+        except FileExistsError as e:
+            if str(e) == "Session request already made":
+                print("Session reqeust already exists, adding user to requestees")
+                try:
+                    session.SRChange("request","requestees",username,add = True)
+                except Exception as e:
+                    print("Error:\n", e)
+                    return 'fail'            
         except Exception as e:
             print(f'Error has occured when requesting\n{e}')
             return 'fail'
@@ -124,8 +138,7 @@ def requestSession():
 
 @app.route('/changedata', methods = ["GET"])
 def dataChange():
-    request.form.get("")
-
+    request.form.get("")    
     
     print("Initiating changing of date for")
 

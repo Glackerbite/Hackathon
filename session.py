@@ -17,9 +17,9 @@ class Session:
             elif self.type == "biology":
                 self.id = f'B{self.time}'
             else:
-                print("Error in function setId: Type syntax error.")
+                raise SyntaxError("Error in function setId: Type syntax error.")
         else:
-            print("ID already set")
+            raise Exception("ID already set")
             
         os.makedirs("sessionRequests", exist_ok=True)
         os.makedirs("sessions",exist_ok=True)
@@ -42,15 +42,19 @@ class Session:
                 with open(f'sessions/{self.date}/{self.id}','w') as f:
                     f.write(f'time end:{timeEnd}\nsession type:{self.type}\nteacher Supervisor:{teacher}\nequipment:{equipment}\nplaces:{places}\nstudents:\nwaitlist:')
             except Exception as e:
-                print(f'Error adding session: {e}')
+                raise Exception(f'Error adding session: {e}')
             else:
                 print(f"Session added succesfully with: {self.id}, time end:{timeEnd}\nsessions type:{self.type}\nteacher Supervisor:{teacher}\nequipment:{equipment}\nplaces:{places}\n")
         else:
-            print(f'Error session on {self.date}, of {self.type} at {self.time} already exists')
-                 
+            raise FileExistsError(f'Error session on {self.date}, of {self.type} at {self.time} already exists')
+            
 
     def requestSession(self,user:str,timeEnd:str,teacherRequested:str,equipment=""):
-        if not self.filecheck() and not self.reqcheck():
+        if  self.reqcheck():
+            raise FileExistsError(f'Session request already made')
+        elif self.filecheck():
+            raise FileExistsError(f'Session file already exists')
+        else:
             print("Creating request.")
             nl = "\n"
             try:
@@ -58,12 +62,10 @@ class Session:
                     f.write(f'requestees:{user}\ntime end:{timeEnd}\nsession type:{self.type}\nteacher Supervisor:{teacherRequested}\nequipment:{equipment}')
 
             except Exception as e: 
-                print(f"Error has occured in request session: \n{e}")
+                raise Exception(f"Error has occured in request session: \n{e}")
             else:
                 print("Session request sucessfully made.")
-        else:
-            print(f'Session request already made or session already exists.')
-            ...
+
     def delete(self,fileType="",type="session"):
         """
         Handles file and folder deletion\n
@@ -78,42 +80,42 @@ class Session:
                 try:
                     shutil.rmtree(sessionDirectory)
                 except FileNotFoundError:
-                    print(f"{sessionDirectory} Folder was not found")
+                    raise FileNotFoundError(f"{sessionDirectory} Folder was not found")
 
                 except Exception as e:
-                    print(f'Error in delete function:\n {e} ')
+                    raise Exception(f'Error in delete function:\n {e} ')
             elif fileType == "file":
                 try:
                     os.remove(f'{sessionDirectory}/{self.id}')
                 except FileNotFoundError:
-                    print(f"Error: {sessionDirectory}/{self.id} doesnt exist.")
+                    raise FileNotFoundError(f"Error: {sessionDirectory}/{self.id} doesnt exist.")
                 except Exception as e:
-                    print(f'Error in delete function:\n {e} ')
+                    raise Exception(f'Error in delete function:\n {e} ')
             else:
                 raise Exception("ERROR in delete: fileType syntax error.")
         elif type == "request":
             try:
                 os.remove(requestDirectory)
             except FileNotFoundError:
-                print(f"{requestDirectory} request not found.")
+                raise FileNotFoundError(f"{requestDirectory} request not found.")
             except Exception as e:
-                print(f'Error in delete function:\n {e} ')
+                raise Exception(f'Error in delete function:\n {e} ')
             
     def requestTransfer(self,places=10,priorityPlaces=3):
         if self.filecheck():
             print("Session file already exists, removing request file.")
             self.delete(type="request")
+        elif not self.reqcheck():
+            raise FileNotFoundError("Request doesnt exist.")
         else:
 
             with open(f'sessionRequests/{self.date}{self.id}','r') as req, open(f'sessions/{self.date}/{self.id}', "w") as ses:
                 # removes the unecesary requestees part and adds the requestees as people in the waitlist
                 requestees = req.readline().strip()
                 if requestees.startswith("requestees:"):
-                    print("R1")
                     requestees = requestees.replace("requestees:", "", 1).strip()
                 else:
-                    print("error in RequestTransfer: Syntax error")
-                    return 
+                    raise SyntaxError("error in RequestTransfer: Syntax error")
 
                 for line in req:
                     if line.strip():
@@ -122,43 +124,56 @@ class Session:
             self.delete(type="request")
             
             
-    def SRChange(self,type:str,dataType:str,data:str):
+    def SRChange(self,type:str,dataType:str,data:str, add: bool = False):
         filedir = ""
         filelines = []
+        changed = False
+
         if type == "session":
             filedir = f'sessions/{self.date}/{self.id}'
             dataTypes = ["time end","session type", "teacher Supervisor","equipment","places","students","waitlist"]
             if dataType not in dataTypes:
-                print("Error in session change: 'dataType' Syntax error")
-                return 
-            
+                raise SyntaxError("Error in session change: 'dataType' Syntax error")
+
             if not self.filecheck():
-                print("Error: file not found")
-                return
+                raise FileNotFoundError("Error: file not found")
+
         elif type == "request":
             filedir = f'sessionRequests/{self.date}{self.id}'
             dataTypes = ["requestees", "time end","session type", "teacher Supervisor","equipment"]
-            if  dataType not in dataTypes:
-                print("Error in request change: 'dataType' Syntax error")
-                return 
-            
+            if dataType not in dataTypes:
+                raise SyntaxError("Error in request change: 'dataType' Syntax error")
+
             if not self.reqcheck():
-                print("Error in request change: file not found")
-                return
+                raise FileNotFoundError("Error in request change: file not found")
+
         else:
-            print("Error in request change: syntax error")
-            return
+            raise SyntaxError("Error in request change: syntax error")
         
         with open(filedir, "r") as file:
             for line in file:
-                if line.startswith(f"{dataType}:"):
-                    line = f"{dataType}:{data}\n"
+                # split the first ':' to separate key and value
+                if ':' in line:
+                    key, rest = line.split(':', 1)
+                    if key == dataType:
+                        changed = True
+                        current = rest.rstrip("\n")
+                        if add:
+                            # append with a comma if there is existing data
+                            if current:
+                                line = f"{dataType}:{current},{data}\n"
+                            else:
+                                line = f"{dataType}:{data}\n"
+                        else:
+                            line = f"{dataType}:{data}\n"
                 filelines.append(line)
+
+        if not changed:
+            raise SyntaxError(f"No line found for dataType '{dataType}' in {filedir}")
 
         with open(filedir, "w") as file:
             file.writelines(filelines)            
-        
+
 
     def __str__(self):
-        return f'date:{self.date}, time:{self.time}, id:{self.id}' 
-      
+        return 
