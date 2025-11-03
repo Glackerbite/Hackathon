@@ -77,26 +77,22 @@ def register():
             return "success"
     raise Exception("Something went wrong when creating the account.")
 
-@app.route("/get_sessions_zip", methods=["GET"])
+@app.route("/requestSession", methods=["GET"])
 def get_sessions_zip():
     base_folder = Path("sessions")
-    zip_file = updates.create_zip(base_folder, filter_by_date=True)
-
-    if not zip_file:
+    zip_buf = updates.create_zip_bytes(base_folder, filter_by_date=True)
+    if not zip_buf:
         return 'fail'
+    return send_file(zip_buf, mimetype='application/zip', as_attachment=True, download_name="sessions_selected.zip")
 
-    return send_file(zip_file, as_attachment=True, download_name="sessions_selected.zip")
 
-
-@app.route("/set_requests_zip", methods=["GET"])
+@app.route("/requestRequests", methods=["GET"])
 def set_requests_zip():
     base_folder = Path("requests")
-    zip_file = updates.create_zip(base_folder, filter_by_date=False)
-
-    if not zip_file:
+    zip_buf = updates.create_zip_bytes(base_folder, filter_by_date=False)
+    if not zip_buf:
         return 'fail'
-
-    return send_file(zip_file, as_attachment=True, download_name="requests.zip")
+    return send_file(zip_buf, mimetype='application/zip', as_attachment=True, download_name="requests.zip")
 
 @app.route("/requestSessionEntry", methods = ["POST", "GET"])
 def requestSessionEntry():
