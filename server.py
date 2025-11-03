@@ -72,11 +72,12 @@ def register():
             return "success"
     raise Exception("Something went wrong when creating the account.")
 
-@app.route('/calendar', methods=['POST'])
+@app.route('/requestsessiondata', methods=['POST'])
 def calendar():
     
-    
+
     return ...
+
 
 @app.route("/requestSession", methods = ["POST", "GET"])
 def requestSession():
@@ -87,19 +88,46 @@ def requestSession():
     accounType = request.form.get("accountType")
     date = request.form.get('date')
     time = request.form.get('time')
-    lab = request.form.get('lab')
+    timeEnd= request.form.get('timeEnd')
+    teacher = request.form.get('teacher')
+    type = request.form.get('type')
     equipment = request.form.get('equipment')
-    
-
     if key != os.getenv("KEY"):
         print("Login failed: Invalid key")
         return "fail"
     
-    session = Session()    
+    session = Session(date,time,type)
 
+    print(f"Session:{session.time}:{session.id}")
+    if accounType == "student":
+        print(f'logged in as student')
+        try:
+            session.requestSession(username,timeEnd,teacher,equipment)
+        except Exception as e:
+            print(f'Error has occured when requesting\n{e}')
+            return 'fail'
+        else:
+            ...
+            return 'success'
+    elif accounType == "teacher":
+        print("Logged in as teacher")
+        try:
+            session.setSession(timeEnd,username,equipment)
+        except Exception as e:
+            print(f'Error has occured during session request\n{e}')
+            return 'fail'
+        else: 
+            return 'success'
+    else:
+        print(f'account error: {accounType}')
+        return 'fail'
 
-    return 
+@app.route('/changedata', methods = ["GET"])
+def dataChange():
+    request.form.get("")
 
+    
+    print("Initiating changing of date for")
 
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=os.getenv("PORT", 5000)) 
