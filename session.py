@@ -12,7 +12,7 @@ class Session:
         
     def setId(self):
         if self.id == None:
-            if self.type == "physics" or self.type == "chemistry" or self.type == "chemistry and physics":
+            if self.type in ["physics", "chemistry", "chemistry and physics"]:
                 self.id = f'M{self.time}'
             elif self.type == "biology":
                 self.id = f'B{self.time}'
@@ -62,7 +62,7 @@ class Session:
             else:
                 print("Session request sucessfully made.")
         else:
-            print(f'Session request already made by someone/Session alrea.')
+            print(f'Session request already made or session already exists.')
             ...
     def delete(self,fileType="",type="session"):
         """
@@ -78,7 +78,7 @@ class Session:
                 try:
                     shutil.rmtree(sessionDirectory)
                 except FileNotFoundError:
-                    print(f"{sessionDirectory} Folder was not cound")
+                    print(f"{sessionDirectory} Folder was not found")
 
                 except Exception as e:
                     print(f'Error in delete function:\n {e} ')
@@ -112,7 +112,7 @@ class Session:
                     print("R1")
                     requestees = requestees.replace("requestees:", "", 1).strip()
                 else:
-                    print("error in requestTransfer: Syntax error")
+                    print("error in RequestTransfer: Syntax error")
                     return 
 
                 for line in req:
@@ -124,17 +124,40 @@ class Session:
             
     def SRChange(self,type:str,dataType:str,data:str):
         filedir = ""
-
+        filelines = []
         if type == "session":
             filedir = f'sessions/{self.date}/{self.id}'
             dataTypes = ["time end","session type", "teacher Supervisor","equipment","places","students","waitlist"]
-            if not dataType in dataTypes:
+            if dataType not in dataTypes:
                 print("Error in session change: 'dataType' Syntax error")
-            if self.filecheck():
-                print("")
+                return 
+            
+            if not self.filecheck():
+                print("Error: file not found")
+                return
+        elif type == "request":
+            filedir = f'sessionRequests/{self.date}{self.id}'
+            dataTypes = ["requestees", "time end","session type", "teacher Supervisor","equipment"]
+            if  dataType not in dataTypes:
+                print("Error in request change: 'dataType' Syntax error")
+                return 
+            
+            if not self.reqcheck():
+                print("Error in request change: file not found")
+                return
+        else:
+            print("Error in request change: syntax error")
+            return
+        
+        with open(filedir, "r") as file:
+            for line in file:
+                if line.startswith(f"{dataType}:"):
+                    line = f"{dataType}:{data}\n"
+                filelines.append(line)
 
-
-
+        with open(filedir, "w") as file:
+            file.writelines(filelines)            
+        
 
     def __str__(self):
         return f'date:{self.date}, time:{self.time}, id:{self.id}' 
