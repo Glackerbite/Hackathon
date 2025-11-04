@@ -193,6 +193,62 @@ def requestSession():
         print(f'account error: {accounType}')
         return 'fail'
 
+@app.route("/teacher_cancelation", methods = ["POST", "GET"])
+def teacher_cancelation():
+    print("Received teacher cancelation request")
+    key = request.form.get('key')
+    username = request.form.get('username')
+    accountType = request.form.get("accountType")
+    motive = request.form.get('motive')
+    date = request.form.get('date')
+    time = request.form.get('time')
+    type = request.form.get('type')
+    if key != os.getenv("KEY"):
+        print("Login failed: Invalid key")
+        return "fail"
+    
+    session = Session(date,time,type)
 
+    print(f"Session:{session.time}:{session.id}")
+
+    try:
+        session.cancelation(username,accountType)
+    except Exception as e:
+        print(f'Error has occured during teacher cancelation\n{e}')
+        return 'fail'
+    else: 
+        return 'success'
+
+@app.route("/student_cancelation", methods = ["POST", "GET"])
+def student_cancelation():
+
+    try:
+        print("Received student cancelation request")
+        key = request.form.get('key')
+        username = request.form.get('username')
+        accountType = request.form.get("accountType")
+        date = request.form.get('date')
+        time = request.form.get('time')
+        type = request.form.get('type')
+        if key != os.getenv("KEY"):
+            print("Login failed: Invalid key")
+            return "fail"
+    
+        session = Session(date,time,type)
+
+        print(f"Session:{session.time}:{session.id}")
+    except Exception as e:
+        print(f'Error accessing session for cancelation\n{e}')
+        return 'fail'
+
+    try:
+        session.cancelation(username,accountType)
+    except Exception as e:
+        print(f'Error has occured during student cancelation\n{e}')
+        return 'fail'
+    else: 
+        return 'success'
+    
+    
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=os.getenv("PORT", 5000)) 

@@ -110,7 +110,6 @@ class Session:
         else:
 
             with open(f'sessionRequests/{self.date}{self.id}','r') as req, open(f'sessions/{self.date}/{self.id}', "w") as ses:
-                # removes the unecesary requestees part and adds the requestees as people in the waitlist
                 requestees = req.readline().strip()
                 if requestees.startswith("requestees:"):
                     requestees = requestees.replace("requestees:", "", 1).strip()
@@ -206,6 +205,43 @@ class Session:
                         return [item.strip() for item in value.split(',') if item.strip()]
 
         raise SyntaxError(f"No line found for dataType '{dataType}' in {filedir}")
+    def cancelation(self,username:str, accountType:str):
+        if accountType == "student":
+            print("Initiating cancelation for student.")
+            students = self.SRGet("session","students")
+            waitlist = self.SRGet("session","waitlist")
+            if username in students:
+                students.remove(username)
+                self.SRChange("session","students",",".join(students))
+                print(f"{username} removed from session students.")
+
+                if waitlist:
+                    next_student = waitlist.pop(0)
+                    self.SRChange("session","students",next_student,add=True)
+                    self.SRChange("session","waitlist",",".join(waitlist))
+                    print(f"{next_student} moved from waitlist to students.")
+            elif username in waitlist:
+                waitlist.remove(username)
+                self.SRChange("session","waitlist",",".join(waitlist))
+                print(f"{username} removed from waitlist.")
+            else:
+                print(f"{username} not found in students or waitlist.")
+                raise Exception("error3")
+            
+        elif accountType == "teacher":
+            print("Initiating cancelation for teacher supervisor.")
+            current_teachers = self.SRGet("session","teacher Supervisor")
+            if username in current_teachers:
+                current_teachers.remove(username)
+                self.SRChange("session","teacher Supervisor",",".join(current_teachers))
+                print(f"{username} removed from teacher supervisors.")
+            else:
+                print(f"{username} not found in teacher supervisors.")
+                raise Exception("error4")
+            
+            if current_teachers == []:
+                print("No more teacher left in session, canceling session.")
+                self.delete(fileType="file")
 
     def __str__(self):
         return 
