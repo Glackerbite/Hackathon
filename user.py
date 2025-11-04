@@ -33,7 +33,6 @@ class User:
                       "accounttype":accounttype, 
                       "priority": priority, 
                       "notifications":notifications}
-            print(params)
             createFile(filedir=f"accounts/{self.username}",params=params)
     
     def login(self,password:str)-> bool:
