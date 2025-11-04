@@ -3,7 +3,7 @@ import pathlib as Path
 import shutil
 
 
-def getData(filedir: str, dataTypes: list = None, dataType: str = ""):
+def getData(filedir: str, dataTypes: list = None, dataType: str = "") -> dict | list:
     """Read a simple key:comma,separated,value file and return parsed values.
 
     - Returns a dict of key -> list-of-values when no filters given.
@@ -46,7 +46,7 @@ def getData(filedir: str, dataTypes: list = None, dataType: str = ""):
     else:  # no filter: return everything
         return data
     
-def writeData(filedir: str, dataType: str, data: str = "", add: bool = False, remove: bool = False):
+def writeData(filedir: str, dataType: str, data: str = "", add: bool = False, remove: bool = False)-> None:
     """Update a line in the data file for a given dataType.
 
     - If add=True: append comma-separated tokens from `data` to the existing list (no duplicates).
@@ -100,7 +100,7 @@ def writeData(filedir: str, dataType: str, data: str = "", add: bool = False, re
 
     with open(filedir, "w") as file:
         file.writelines(filelines)
-def delete(deldir: str,fileType: str):
+def delete(deldir: str,fileType: str) -> None: 
 
     if fileType == "folder":
         try:
@@ -120,7 +120,7 @@ def delete(deldir: str,fileType: str):
     else:
         raise SyntaxError("ERROR in delete function: fileType syntax error.")
 
-def createFile(filedir: str,params: dict):
+def createFile(filedir: str,params: dict) -> None:
     try:
         with open(filedir, 'w') as f:
             for key, value in params.items():

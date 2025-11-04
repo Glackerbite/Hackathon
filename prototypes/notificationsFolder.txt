@@ -1,0 +1,24 @@
+Folder name: notifications
+Inside:
+(
+    alerts: Folder
+    requests: Folder
+)
+Folder name: alerts
+inside
+(datefiles)
+Folder name: Requests
+inside
+(datefiles)
+Folder title: Datefiles 
+name : ddmmyy
+inside(
+    notificationFile: 
+    file title: notificationFile
+    name: var ID
+    var ID = f'{type(request=r, alert= a)}00000
+    inside(
+        recipients:recipients
+        message:messageList[message]
+    )
+)

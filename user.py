@@ -1,6 +1,6 @@
 import os
 import shutil
-from filehandlers import getData, writeData, createFile, delete
+from filehandlers import getData, writeData, createFile
 
 
 class User:
@@ -9,7 +9,7 @@ class User:
         self.password = None
         self.accounttype = None
         self.priority = None
-        self.events = None
+        self.notifications = None
         os.makedirs("accounts", exist_ok=True)
 
     def checkExists(self):
@@ -22,17 +22,17 @@ class User:
         else:
             self.password = data.get("password",[None])[0]
             self.accounttype = data.get("accounttype",[None])[0]
-            self.priority = int(data.get("priority",[0])[0])
-            self.events = data.get("events",[])
-    def createUserFile(self,password:str,accounttype:str,priority:str = "0",events:list=[]):
-        print(f'Creating user file for {self.username}, with password {password}, account type {accounttype}, priority {priority}, events {events}')
+            self.priority = data.get("priority",["0"])[0]
+            self.notifications = data.get("notifications",[])
+    def createUserFile(self,password:str,accounttype:str,priority:str = "0",notifications:list=[]):
+        print(f'Creating user file for {self.username}, with password {password}, account type {accounttype}, priority {priority}, notifications {notifications}')
         if self.checkExists():
             raise FileExistsError(f"User file for '{self.username}' already exists.")
         else:
             params = {"password":password,
                       "accounttype":accounttype, 
                       "priority": priority, 
-                      "events":events}
+                      "notifications":notifications}
             print(params)
             createFile(filedir=f"accounts/{self.username}",params=params)
     
@@ -48,9 +48,9 @@ class User:
             else:
                 print(f"Incorrect password for user '{self.username}'.")
                 return False
-    def register(self,password:str,accounttype:str="student",priority:str = "0",events:list=[]):
+    def register(self,password:str,accounttype:str="student",priority:str = "0",notifications:list=[]):
         try:
-            self.createUserFile(password,accounttype,priority,events)
+            self.createUserFile(password,accounttype,priority,notifications)
         except FileExistsError:
             raise FileExistsError(f"User file for '{self.username}' already exists.")
         else:

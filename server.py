@@ -35,7 +35,7 @@ def login():
         return "fail"
     if success:
         print("Login successful")
-        return f"success, {username}, {user.accounttype}, {','.join(user.events)}"
+        return f"success, {username}, {user.accounttype}"
     else:
         print("Login failed: Incorrect password")
         return "fail"

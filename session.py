@@ -54,7 +54,7 @@ class Session:
                     "students": "",
                     "waitlist": ""
                 }
-                createFile(filedir=self.sesdir, params=params)
+                createFile(self.sesdir, params)
             except Exception as e:
                 raise Exception(f'Error adding session: {e}')
             else:
@@ -81,7 +81,7 @@ class Session:
                     "teacher Supervisor": teacherRequested,
                     "equipment": equipment
                 }
-                createFile(filedir=self.reqdir, params=params)
+                createFile(self.reqdir, params)
             except Exception as e: 
                 raise Exception(f"Error has occured in request session: \n{e}")
             else:
@@ -167,7 +167,7 @@ class Session:
             raise SyntaxError(f"No line found for dataType '{dataType}' in {filedir}")
         except Exception as e:
             raise Exception(f"Error in SRChange:\n {e}")
-    def SRGet(self, type:str, dataType:str):
+    def SRGet(self, type:str, dataType:str)-> list:
 
         if type == "session":
             filedir = self.sesdir
@@ -184,13 +184,15 @@ class Session:
                 raise SyntaxError("Error in request get: 'dataType' Syntax error")
             if not self.reqcheck():
                 raise FileNotFoundError("Error in request get: file not found")
-
         else:
             raise SyntaxError("Error in SRGet: invalid type parameter")
+        
         try:
-            return getData(filedir,dataType=dataType)
+            data = getData(filedir,dataType=dataType)
+            print(data)
+            return data
         except KeyError:
-            raise SyntaxError(f"No line found for dataType '{dataType}' in {filedir}")
+            raise SyntaxError(f"No line found for dataType '{dataType}' in {filedir}") #just in case
         except Exception as e:
             raise Exception(f"Error in SRGet:\n {e}")
         
