@@ -1,6 +1,6 @@
 import os
 import shutil
-from filehandlers import getData, writeData
+from filehandlers import getData, writeData, createFile, delete
 
 
 class User:
@@ -20,12 +20,34 @@ class User:
             self.accounttype = data.get("accounttype",[None])[0]
             self.priority = int(data.get("priority",[0])[0])
             self.events = data.get("events",[])
-    def createUserFile(self,password:str,accounttype:str,priority:int=0,events:list=[]):
+    def createUserFile(self,password:str,accounttype:str,priority:str = "0",events:list=[]):
+        print(f'Creating user file for {self.username}, with password {password}, account type {accounttype}, priority {priority}, events {events}')
         if self.checkExists():
             raise FileExistsError(f"User file for '{self.username}' already exists.")
         else:
-            writeData(filedir=f"accounts/{self.username}",dataType="password",data=password)
-            writeData(filedir=f"accounts/{self.username}",dataType="accounttype",data=accounttype)
-            writeData(filedir=f"accounts/{self.username}",dataType="priority",data=str(priority))
-            writeData(filedir=f"accounts/{self.username}",dataType="events",data=",".join(events))
+            params = {"password":password,
+                      "accounttype":accounttype, 
+                      "priority": priority, 
+                      "events":events}
+            print(params)
+            createFile(filedir=f"accounts/{self.username}",params=params)
     
+    def login(self,password:str)-> bool:
+        try:
+            self.readUserFile()
+        except FileNotFoundError:
+            raise FileNotFoundError(f"User file for '{self.username}' not found.")
+        else:
+            if self.password == password:
+                print(f"User '{self.username}' logged in successfully.")
+                return True
+            else:
+                print(f"Incorrect password for user '{self.username}'.")
+                return False
+    def register(self,password:str,accounttype:str="student",priority:str = "0",events:list=[]):
+        try:
+            self.createUserFile(password,accounttype,priority,events)
+        except FileExistsError:
+            raise FileExistsError(f"User file for '{self.username}' already exists.")
+        else:
+            print(f"User '{self.username}' registered successfully.")

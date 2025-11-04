@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 import updates
 import tempfile
-# import user
+from user import User
 
 load_dotenv()
 app = Flask(__name__)
@@ -23,33 +23,48 @@ def login():
     if key != os.getenv("KEY"):
         print("Login failed: Invalid key")
         return "fail"
-    
+    user= User(username)
+    success = False
     try:
-        userfile= open("accounts/"+username+".txt" , 'r') 
+        success = user.login(password)
     except FileNotFoundError:
         print("Login failed: User not found")
         return "fail"
     except Exception as e:
-        print("Error accessing account file:", e)
+        print("Error at login route:\n", e)
         return "fail"
+    if success:
+        print("Login successful")
+        return f"success, {username}, {user.accounttype}, {','.join(user.events)}"
     else:
-        data= userfile.read()
-        data = data.splitlines()
-        userfile.close()
-        
-        password2 = data[0]
-        account_type = data[1]
-        classes = data[2]
-        print(f"Read password: {password2} and comparing with {password}")
-        if password2 == password:
-            if len(password2) < 1 or len(account_type) < 1:
-                print("Login failed: Malformed account file")
-                return "fail"
-            print("Login successful")
-            return f"success, {username}, {account_type}, {classes}" 
         print("Login failed: Incorrect password")
-        userfile.close()
         return "fail"
+    # try:
+    #     userfile= open("accounts/"+username+".txt" , 'r') 
+    # except FileNotFoundError:
+    #     print("Login failed: User not found")
+    #     return "fail"
+    # except Exception as e:
+    #     print("Error accessing account file:", e)
+    #     return "fail"
+    # else:
+    #     data= userfile.read()
+    #     data = data.splitlines()
+    #     userfile.close()
+        
+    #     password2 = data[0]
+    #     account_type = data[1]
+    #     classes = data[2]
+    #     print(f"Read password: {password2} and comparing with {password}")
+    #     if password2 == password:
+    #         if len(password2) < 1 or len(account_type) < 1:
+    #             print("Login failed: Malformed account file")
+    #             return "fail"
+    #         print("Login successful")
+    #         return f"success, {username}, {account_type}, {classes}" 
+    #     print("Login failed: Incorrect password")
+    #     userfile.close()
+    #     return "fail"
     
 @app .route('/register', methods=['POST'])
 def register():
@@ -68,16 +83,27 @@ def register():
         return "fail"
     
     print(f"Attempting to register {accountType}{username} with password {password}.")
-
-    if os.path.exists(f"accounts/{username}.txt"):
-        print(f"{username} already exists")
-        return 'fail'
+    user = User(username)
+    try:
+        user.register(password,accountType,"0",classes.split(",") if classes else [])
+    except FileExistsError:
+        print(f"Registration failed: User '{username}' already exists.")
+        return "fail"
+    except Exception as e:
+        print("Error during registration route:\n", e)
+        return "fail"
     else:
-        with open(f"accounts/{username}","w") as file:
-            file.write(f"{password}\n{accountType}\n{classes}")
-            print("Succesfully added new account")
-            return "success"
-    raise Exception("Something went wrong when creating the account.")
+        print("Succesfully added new account")
+        return 'success'
+    # if os.path.exists(f"accounts/{username}.txt"):
+    #     print(f"{username} already exists")
+    #     return 'fail'
+    # else:
+    #     with open(f"accounts/{username}","w") as file:
+    #         file.write(f"{password}\n{accountType}\n{classes}")
+    #         print("Succesfully added new account")
+    #         return "success"
+    # raise Exception("Something went wrong when creating the account.")
 
 @app.route("/requestSession", methods=["GET"])
 def get_sessions_zip():

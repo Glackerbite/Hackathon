@@ -1,3 +1,7 @@
+import os
+import pathlib as Path
+import shutil
+
 
 def getData(filedir: str, dataTypes: list = None, dataType: str = ""):
     """Read a simple key:comma,separated,value file and return parsed values.
@@ -96,3 +100,35 @@ def writeData(filedir: str, dataType: str, data: str = "", add: bool = False, re
 
     with open(filedir, "w") as file:
         file.writelines(filelines)
+def delete(deldir: str,fileType: str):
+
+    if fileType == "folder":
+        try:
+            shutil.rmtree(deldir)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"{deldir} Folder was not found")
+        except Exception as e:
+            raise Exception(f'Error in delete function:\n {e} ')
+        
+    elif fileType == "file":
+        try:
+            os.remove(f'{deldir}')
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Error: {deldir} doesnt exist.")
+        except Exception as e:
+            raise Exception(f'Error in delete function:\n {e} ')
+    else:
+        raise SyntaxError("ERROR in delete: fileType syntax error.")
+
+def createFile(filedir: str,params: dict):
+    try:
+        with open(filedir, 'w') as f:
+            for key, value in params.items():
+                value = ','.join(value) if isinstance(value, list) else value
+                key, value = key.strip(), value.strip()
+                f.write(f"{key}:{value}\n")
+            
+    except FileExistsError:
+        raise FileExistsError(f"File '{filedir}' already exists.")
+    except Exception as e:
+        raise Exception(f"Error creating file '{filedir}': {e}")

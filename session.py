@@ -67,15 +67,13 @@ class Session:
             else:
                 print("Session request sucessfully made.")
 
-    def delete(self,type=str,fileType="folder"):
+    def delete(self,fileType="file",type="session"):
         """
         Handles file and folder deletion\n
         params:\n
         fileType: ONLY for sessions, use either folder or file \n
         type: default = session, can change to request
         """
-        # sessionDirectory = f'sessions/{self.date}'
-        # requestDirectory = f'sessionRequests/{self.date}{self.id}'
         directory = ''
         if type == "session":
             directory = f'sessions/{self.date}'
@@ -92,7 +90,7 @@ class Session:
         try:
             delete(directory,fileType)
         except FileNotFoundError:
-            raise FileNotFoundError(f"{directory} request not found.")
+            raise FileNotFoundError(f"{directory} not found.")
         except Exception as e:
             raise Exception(f'Error in delete function:\n {e} ')
         
