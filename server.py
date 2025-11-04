@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 import updates
 import tempfile
+# import user
 
 load_dotenv()
 app = Flask(__name__)
@@ -72,7 +73,7 @@ def register():
         print(f"{username} already exists")
         return 'fail'
     else:
-        with open(f"accounts/{username}.txt","w") as file:
+        with open(f"accounts/{username}","w") as file:
             file.write(f"{password}\n{accountType}\n{classes}")
             print("Succesfully added new account")
             return "success"
@@ -85,7 +86,6 @@ def get_sessions_zip():
     if not zip_buf:
         return 'fail'
     return send_file(zip_buf, mimetype='application/zip', as_attachment=True, download_name="sessions_selected.zip")
-
 
 @app.route("/requestRequests", methods=["GET"])
 def set_requests_zip():
@@ -137,7 +137,6 @@ def requestSessionEntry():
         print(f'account error: {acountType}')
 
         return 'fail'
-
 
 @app.route("/requestSession", methods = ["POST", "GET"])
 def requestSession():

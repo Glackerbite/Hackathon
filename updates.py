@@ -123,10 +123,10 @@ def sessionCleanup():
                 print(f"Deleted session folder: {sessionDate}")
             except Exception as e:
                 print(f"Error deleting session folder {sessionDate}: {e}")
-
-
+    
 if __name__ == '__main__':
     print("Starting server internal update loop")
+    Session("0000","0000","physics")  # preload Session class to avoid delays later
     loopid = 0 
     while True:
         print("updating sessions...")
