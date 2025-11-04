@@ -123,7 +123,7 @@ class Session:
             self.delete(type="request")
             
             
-    def SRChange(self,type:str,dataType:str,data:str, add: bool = False):
+    def SRChange(self,type:str,dataType:str,data:str, add: bool = False, remove:bool = False):
         filedir = ""
         filelines = []
         changed = False
@@ -163,7 +163,21 @@ class Session:
                                 line = f"{dataType}:{current},{data}\n"
                             else:
                                 line = f"{dataType}:{data}\n"
+                        elif remove:
+                            # get current items as list and remove one or more comma-separated values
+                            items = self.SRGet(type, dataType)
+                            # support removing multiple comma-separated tokens provided in `data`
+                            to_remove = [d.strip() for d in data.split(',') if d.strip()]
+                            for token in to_remove:
+                                if token in items:
+                                    items.remove(token)
+                            # rewrite the line: if no items left, leave blank after colon
+                            if items:
+                                line = f"{dataType}:{','.join(items)}\n"
+                            else:
+                                line = f"{dataType}:\n"
                         else:
+                            # direct replace
                             line = f"{dataType}:{data}\n"
                 filelines.append(line)
 
@@ -171,7 +185,7 @@ class Session:
             raise SyntaxError(f"No line found for dataType '{dataType}' in {filedir}")
 
         with open(filedir, "w") as file:
-            file.writelines(filelines)            
+            file.writelines(filelines)
     def SRGet(self, type:str, dataType:str):
 
         if type == "session":

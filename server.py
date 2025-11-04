@@ -249,6 +249,71 @@ def student_cancelation():
     else: 
         return 'success'
     
+@app.route('/approvesession', methods = ["POST","GET"])
+def approvession():
+    print("Received approve session request")
+    key = request.form.get('key')
+    username = request.form.get('username')
+    date = request.form.get('date')
+    time = request.form.get('time')
+    type = request.form.get('type')
+    if key != os.getenv("KEY"):
+        print("Login failed: Invalid key")
+        return "fail"
+    session = Session(date,time,type)
+    if username not in session.SRGet("session","teacher Supervisor"):
+        print(f"{username} is not a supervisor for this session.")
+        return 'fail'
+    else:
+        print(f'{username} is a supervisor for this session.')
+        try:
+            session.requestTransfer()
+        except Exception as e:
+            print(f'Error has occured when approving\n{e}')
+            return 'fail'
+        else:
+            return 'success'
+@app.route('/denysession', methods = ["GET","POST"])
+def denysession():
+    print("Received deny session request")
+    key = request.form.get('key')
+    username = request.form.get('username')
+    date = request.form.get('date')
+    time = request.form.get('time')
+    type = request.form.get('type')
+    if key != os.getenv("KEY"):
+        print("Login failed: Invalid key")
+        return "fail"
+    session = Session(date,time,type)
+    teachers = session.SRGet("session","teacher Supervisor")
+    if username not in teachers:
+        print(f"{username} is not a supervisor for this session.")
+        return 'fail'
     
+    print(f'Removing {username} from supervisors.')
+    try:
+        session.SRChange("session","teacher Supervisor",username,remove=True)
+    except Exception as e:
+        print(f'Error has occured when denying\n{e}')
+        return 'fail'
+
+ 
+    try:
+        teachers = session.SRGet("session","teacher Supervisor")
+    except Exception as e:
+        print(f'Error reading supervisors after removal\n{e}')
+        return 'fail'
+
+    if teachers == []:
+        print(f'No more supervisors for this session.')
+        try:
+            session.delete(type="request")
+        except Exception as e:
+            print(f'Error has occured when denying\n{e}')
+            return 'fail'
+
+    return 'success'
+
+
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=os.getenv("PORT", 5000)) 
