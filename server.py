@@ -22,6 +22,7 @@ def login():
     if key != os.getenv("KEY"):
         print("Login failed: Invalid key")
         return "fail"
+    
     try:
         userfile= open("accounts/"+username+".txt" , 'r') 
     except FileNotFoundError:
