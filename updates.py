@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 import io
 import zipfile
+from session import Session
 
 def create_zip(base_folder: Path, *, filter_by_date=False, days_ahead=14) -> Path | None:
     """
@@ -55,24 +56,6 @@ def create_zip(base_folder: Path, *, filter_by_date=False, days_ahead=14) -> Pat
         except Exception:
             pass
 
-def addToWaitlist(session,username:str):
-    students = session.SRGet("session","students")
-    waitlist = session.SRGet("session","waitlist")
-    places = int(session.SRGet("session","places")[0])
-    if username in students:
-        print(f"{username} is already enrolled in the session.")
-        raise Exception(f"error1")
-    if username in waitlist:
-        print(f"{username} is already in the waitlist.")
-        raise Exception(f"error2")
-    if len(students) < places:
-        session.SRChange("session","students",username,add=True)
-        print(f"{username} added to session students.")
-    else:
-        session.SRChange("session","waitlist",username,add=True)
-        print(f"{username} added to waitlist.")
-
-
 def create_zip_bytes(base_folder: Path, *, filter_by_date=False, days_ahead=14) -> io.BytesIO | None:
     """
     Create a ZIP archive in-memory and return a BytesIO containing the zip.
@@ -107,3 +90,52 @@ def create_zip_bytes(base_folder: Path, *, filter_by_date=False, days_ahead=14) 
 
     buf.seek(0)
     return buf
+
+def addToWaitlist(session: Session, username: str):
+    students = session.SRGet("session","students")
+    waitlist = session.SRGet("session","waitlist")
+    places = int(session.SRGet("session","places")[0])
+    if username in students:
+        print(f"{username} is already enrolled in the session.")
+        raise Exception(f"error1")
+    if username in waitlist:
+        print(f"{username} is already in the waitlist.")
+        raise Exception(f"error2")
+    if len(students) < places:
+        session.SRChange("session","students",username,add=True)
+        print(f"{username} added to session students.")
+    else:
+        session.SRChange("session","waitlist",username,add=True)
+        print(f"{username} added to waitlist.")
+
+def sessionCleanup():
+    current_date = datetime.now().date()
+    sessionsPath = Path("sessions")
+
+    for sessionDate in sessionsPath.iterdir():
+        try:
+            sessionDate2 = datetime.strptime(sessionDate.name, "%d%m%y").date()
+        except ValueError:
+            raise ValueError(f"Folder name {sessionDate.name} is not in ddmmyy format")
+        if sessionDate2 < current_date:
+            try:
+                shutil.rmtree(sessionDate)
+                print(f"Deleted session folder: {sessionDate}")
+            except Exception as e:
+                print(f"Error deleting session folder {sessionDate}: {e}")
+if __name__ == '__main__':
+    print("Starting server internal update loop")
+    Session("0000","0000","physics")  # preload Session class to avoid delays later
+    loopid = 0 
+    while True:
+        print("updating sessions...")
+        if loopid >= 1440:
+            print("Resetting loop counter")
+            loopid = 0
+        if loopid % 60 == 0:
+            print("Session cleanup check...")
+            sessionCleanup()
+        
+        loopid += 1
+        print("Update cycle complete, sleeping for 60 seconds...")
+        time.sleep(60)

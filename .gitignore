@@ -3,3 +3,5 @@ testcode.py
 date.txt
 sessions
 sessionRequests
+tests
+__pycache__

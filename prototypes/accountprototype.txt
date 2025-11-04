@@ -1,5 +1,5 @@
 username is the title, aftere would be the first line
-password
-accounttype
-classes
-#we add priority later
+password:(password)
+accounttype:(accounttype)
+priority:(priority) #writing this incases we use it in the future
+events:(events) # , separated without spaces
