@@ -118,7 +118,7 @@ def delete(deldir: str,fileType: str):
         except Exception as e:
             raise Exception(f'Error in delete function:\n {e} ')
     else:
-        raise SyntaxError("ERROR in delete: fileType syntax error.")
+        raise SyntaxError("ERROR in delete function: fileType syntax error.")
 
 def createFile(filedir: str,params: dict):
     try:
@@ -129,6 +129,6 @@ def createFile(filedir: str,params: dict):
                 f.write(f"{key}:{value}\n")
             
     except FileExistsError:
-        raise FileExistsError(f"File '{filedir}' already exists.")
+        raise FileExistsError(f"Create File Error:\n File '{filedir}' already exists.")
     except Exception as e:
-        raise Exception(f"Error creating file '{filedir}': {e}")
+        raise Exception(f"Create File Error:\nError creating file '{filedir}': {e}")

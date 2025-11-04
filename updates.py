@@ -91,7 +91,7 @@ def create_zip_bytes(base_folder: Path, *, filter_by_date=False, days_ahead=14) 
     buf.seek(0)
     return buf
 
-def addToWaitlist(session,username:str):
+def addToWaitlist(session: Session, username: str):
     students = session.SRGet("session","students")
     waitlist = session.SRGet("session","waitlist")
     places = int(session.SRGet("session","places")[0])
@@ -137,4 +137,5 @@ if __name__ == '__main__':
             sessionCleanup()
         
         loopid += 1
+        print("Update cycle complete, sleeping for 60 seconds...")
         time.sleep(60)

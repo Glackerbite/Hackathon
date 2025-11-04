@@ -6,7 +6,11 @@ from filehandlers import getData, writeData, createFile, delete
 class User:
     def __init__(self,username:str):
         self.username = username
-        return
+        self.password = None
+        self.accounttype = None
+        self.priority = None
+        self.events = None
+        os.makedirs("accounts", exist_ok=True)
 
     def checkExists(self):
         return os.path.exists(f"accounts/{self.username}")
