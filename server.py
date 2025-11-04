@@ -39,33 +39,7 @@ def login():
     else:
         print("Login failed: Incorrect password")
         return "fail"
-    # try:
-    #     userfile= open("accounts/"+username+".txt" , 'r') 
-    # except FileNotFoundError:
-    #     print("Login failed: User not found")
-    #     return "fail"
-    # except Exception as e:
-    #     print("Error accessing account file:", e)
-    #     return "fail"
-    # else:
-    #     data= userfile.read()
-    #     data = data.splitlines()
-    #     userfile.close()
-        
-    #     password2 = data[0]
-    #     account_type = data[1]
-    #     classes = data[2]
-    #     print(f"Read password: {password2} and comparing with {password}")
-    #     if password2 == password:
-    #         if len(password2) < 1 or len(account_type) < 1:
-    #             print("Login failed: Malformed account file")
-    #             return "fail"
-    #         print("Login successful")
-    #         return f"success, {username}, {account_type}, {classes}" 
-    #     print("Login failed: Incorrect password")
-    #     userfile.close()
-    #     return "fail"
-    
+
 @app .route('/register', methods=['POST'])
 def register():
     print("Received registration request")
@@ -95,15 +69,6 @@ def register():
     else:
         print("Succesfully added new account")
         return 'success'
-    # if os.path.exists(f"accounts/{username}.txt"):
-    #     print(f"{username} already exists")
-    #     return 'fail'
-    # else:
-    #     with open(f"accounts/{username}","w") as file:
-    #         file.write(f"{password}\n{accountType}\n{classes}")
-    #         print("Succesfully added new account")
-    #         return "success"
-    # raise Exception("Something went wrong when creating the account.")
 
 @app.route("/requestSession", methods=["GET"])
 def get_sessions_zip():

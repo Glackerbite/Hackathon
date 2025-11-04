@@ -1,6 +1,6 @@
 import os
 import shutil
-from filehandlers import getData, writeData, delete
+from filehandlers import getData, writeData, delete, createFile
 
 class Session:
     def __init__(self, date:str, time:str, type:str):
@@ -10,9 +10,13 @@ class Session:
         self.id = None
         
         self.setId()
-        
         os.makedirs("sessionRequests", exist_ok=True)
         os.makedirs("sessions",exist_ok=True)
+        self.checkDateFile()
+        
+        self.reqdir = f'sessionRequests/{self.date}{self.id}'
+        self.sesdir = f'sessions/{self.date}/{self.id}'
+
     def setId(self):
         if self.id == None:
             if self.type in ["physics", "chemistry", "chemistry and physics"]:
@@ -26,9 +30,9 @@ class Session:
             
      
     def filecheck(self)-> bool:
-        return os.path.exists(f'sessions/{self.date}/{self.id}')
+        return os.path.exists(self.sesdir)
     def reqcheck(self) -> bool:
-        return os.path.exists(f'sessionRequests/{self.date}{self.id}')
+        return os.path.exists(self.reqdir)
 
     def checkDateFile(self):
         if not os.path.exists(f'sessions/{self.date}'):
@@ -38,10 +42,19 @@ class Session:
     def setSession(self, timeEnd:str, teacher:str,equipment:str, places=10, priorityPlaces=3):
         
         if not self.filecheck():
-            self.checkDateFile()
             try:    
-                with open(f'sessions/{self.date}/{self.id}','w') as f:
-                    f.write(f'time end:{timeEnd}\nsession type:{self.type}\nteacher Supervisor:{teacher}\nequipment:{equipment}\nplaces:{places}\nstudents:\nwaitlist:')
+                # with open(self.sesdir,'w') as f:
+                #     f.write(f'time end:{timeEnd}\nsession type:{self.type}\nteacher Supervisor:{teacher}\nequipment:{equipment}\nplaces:{places}\nstudents:\nwaitlist:')
+                params = {
+                    "time end": timeEnd,
+                    "session type": self.type,
+                    "teacher Supervisor": teacher,
+                    "equipment": equipment,
+                    "places": str(places),
+                    "students": "",
+                    "waitlist": ""
+                }
+                createFile(filedir=self.sesdir, params=params)
             except Exception as e:
                 raise Exception(f'Error adding session: {e}')
             else:
@@ -59,9 +72,16 @@ class Session:
             print("Creating request.")
             nl = "\n"
             try:
-                with open(f'sessionRequests/{self.date}{self.id}','w') as f:
-                    f.write(f'requestees:{user}\ntime end:{timeEnd}\nsession type:{self.type}\nteacher Supervisor:{teacherRequested}\nequipment:{equipment}')
-
+                # with open(self.reqdir,'w') as f:
+                #     f.write(f'requestees:{user}\ntime end:{timeEnd}\nsession type:{self.type}\nteacher Supervisor:{teacherRequested}\nequipment:{equipment}')
+                params = {
+                    "requestees": user,
+                    "time end": timeEnd,
+                    "session type": self.type,
+                    "teacher Supervisor": teacherRequested,
+                    "equipment": equipment
+                }
+                createFile(filedir=self.reqdir, params=params)
             except Exception as e: 
                 raise Exception(f"Error has occured in request session: \n{e}")
             else:
@@ -80,11 +100,11 @@ class Session:
             if fileType == "folder":
                 pass
             elif fileType == "file":
-                directory = f'sessions/{self.date}/{self.id}'
+                directory = self.sesdir
             else:
                 raise Exception("ERROR in delete: fileType syntax error.")
         elif type == "request":
-            directory = f'sessionRequests/{self.date}{self.id}'
+            directory = self.reqdir
         else:
             raise Exception("ERROR in delete: type syntax error.")
         try:
@@ -102,7 +122,7 @@ class Session:
             raise FileNotFoundError("Request doesnt exist.")
         else:
 
-            with open(f'sessionRequests/{self.date}{self.id}','r') as req, open(f'sessions/{self.date}/{self.id}', "w") as ses:
+            with open(self.reqdir,'r') as req, open(self.sesdir, "w") as ses:
                 requestees = req.readline().strip()
                 if requestees.startswith("requestees:"):
                     requestees = requestees.replace("requestees:", "", 1).strip()
@@ -119,7 +139,7 @@ class Session:
     def SRChange(self,type:str,dataType:str,data:str, add: bool = False, remove:bool = False):
         # Determine file path and validate dataType
         if type == "session":
-            filedir = f'sessions/{self.date}/{self.id}'
+            filedir = self.sesdir
             dataTypes = ["time end","session type", "teacher Supervisor","equipment","places","students","waitlist"]
             if dataType not in dataTypes:
                 raise SyntaxError("Error in session change: 'dataType' Syntax error")
@@ -128,7 +148,7 @@ class Session:
                 raise FileNotFoundError("Error: file not found")
 
         elif type == "request":
-            filedir = f'sessionRequests/{self.date}{self.id}'
+            filedir = self.reqdir
             dataTypes = ["requestees", "time end","session type", "teacher Supervisor","equipment"]
             if dataType not in dataTypes:
                 raise SyntaxError("Error in request change: 'dataType' Syntax error")
@@ -150,7 +170,7 @@ class Session:
     def SRGet(self, type:str, dataType:str):
 
         if type == "session":
-            filedir = f'sessions/{self.date}/{self.id}'
+            filedir = self.sesdir
             dataTypes = ["time end","session type", "teacher Supervisor","equipment","places","students","waitlist"]
             if dataType not in dataTypes:
                 raise SyntaxError("Error in session get: 'dataType' Syntax error")
@@ -158,7 +178,7 @@ class Session:
                 raise FileNotFoundError("Error: file not found")
 
         elif type == "request":
-            filedir = f'sessionRequests/{self.date}{self.id}'
+            filedir = self.reqdir
             dataTypes = ["requestees", "time end","session type", "teacher Supervisor","equipment"]
             if dataType not in dataTypes:
                 raise SyntaxError("Error in request get: 'dataType' Syntax error")
